@@ -25,8 +25,8 @@ class TapsellPlusPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     private var showAdRewardedResult: Result? = null
     private val TAG = "TapsellPlusFlutter"
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "tapsell_plus")
+    override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(binding.binaryMessenger, "tapsell_plus")
         channel.setMethodCallHandler(this)
     }
 
