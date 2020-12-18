@@ -8,25 +8,49 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
 import ir.tapsell.plus.*
 
-class TapsellPlusPlugin(private val activity: Activity) : MethodCallHandler {
+import androidx.annotation.NonNull
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+
+class TapsellPlusPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+
+    private lateinit var channel : MethodChannel
+    private lateinit var activity: Activity
 
     private var showAdOpenedResult: Result? = null
     private var showAdClosedResult: Result? = null
     private var showAdRewardedResult: Result? = null
     private val TAG = "TapsellPlusFlutter"
 
-    companion object {
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val channel = MethodChannel(registrar.messenger(), "tapsell_plus")
-            channel.setMethodCallHandler(TapsellPlusPlugin(registrar.activity()))
-        }
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "tapsell_plus")
+        channel.setMethodCallHandler(this)
     }
 
-    override fun onMethodCall(call: MethodCall, result: Result) {
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        channel.setMethodCallHandler(null)
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity;
+    }
+
+    override fun onDetachedFromActivity() {
+        // Not yet implemented
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        // Not yet implemented
+    }
+    
+    override fun onDetachedFromActivityForConfigChanges() {
+        // Not yet implemented
+    }
+
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         Log.d(TAG, call.method)
         when (call.method) {
             "initialize" -> {
@@ -84,7 +108,7 @@ class TapsellPlusPlugin(private val activity: Activity) : MethodCallHandler {
                     }
 
                     override fun error(message: String?) {
-                        Log.e(TAG, "${call.method}Error")
+                        Log.e(TAG, "${call.method}Error: $message")
                         result.error(zoneId, message, null)
                     }
                 })
