@@ -3,17 +3,18 @@ package ir.tapsell.tapsell_plus
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
+import androidx.annotation.NonNull
 import com.google.gson.Gson
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import ir.tapsell.plus.*
-
-import androidx.annotation.NonNull
-import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
 class TapsellPlusPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
@@ -25,9 +26,15 @@ class TapsellPlusPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     private var showAdRewardedResult: Result? = null
     private val TAG = "TapsellPlusFlutter"
 
+    /** backward compatibility with embedding v1  */
+    fun registerWith(registrar: PluginRegistry.Registrar) {
+        val plugin = TapsellPlusPlugin()
+        plugin.activity = registrar.activity()
+        plugin.setupMethodChannel(registrar.messenger())
+    }
+
     override fun onAttachedToEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(binding.binaryMessenger, "tapsell_plus")
-        channel.setMethodCallHandler(this)
+        setupMethodChannel(binding.binaryMessenger)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -48,6 +55,11 @@ class TapsellPlusPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     
     override fun onDetachedFromActivityForConfigChanges() {
         // Not yet implemented
+    }
+
+    private fun setupMethodChannel(messenger: BinaryMessenger) {
+        channel = MethodChannel(messenger, "tapsell_plus")
+        channel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
