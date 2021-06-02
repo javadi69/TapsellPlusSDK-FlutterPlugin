@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:4.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -19,9 +19,7 @@ rootProject.allprojects {
         google()
         jcenter()
 
-        maven {
-            url 'https://dl.bintray.com/tapsellorg/maven'
-        }
+        mavenCentral()
     }
 }
 
@@ -49,5 +47,5 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'ir.tapsell.plus:tapsell-plus-sdk-android:1.0.10'
+    implementation 'ir.tapsell.plus:tapsell-plus-sdk-android:1.2.6'
 }
